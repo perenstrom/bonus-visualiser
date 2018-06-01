@@ -1,0 +1,74 @@
+$color-green: #44AF69;
+$color-blue: #1A8FE3;
+$color-yellow: #E59500;
+
+
+.graph-container {
+	.hours-row {
+		height: 50px;
+		display: flex;
+    	align-items: flex-end;
+
+		@mixin on-assignment() {
+			background-color: $color-blue;
+			float: left;
+		}
+
+		.on-assignment {
+			@include on-assignment();
+			height: 50%;
+		}
+
+		.on-assignment-bonus {
+			@include on-assignment();
+			height: 70%;
+		}
+
+		.on-assignment-bonus-big {
+			@include on-assignment();
+			height: 100%;
+		}
+	
+		.internal-no-bonus {
+			background-color: $color-green;
+			height: 50%;
+			float: left;
+		}
+	
+		.internal-time-decreasing {
+			background-color: $color-yellow;
+			height: 50%;
+			float: left;
+		}
+	}
+
+	.axis-row {
+		$axis-row-height: 25px;
+		height: $axis-row-height;
+
+		.bonus-limit, .bonus-limit-big {
+			overflow: hidden;
+			height: 100%;
+			box-sizing: border-box;
+			border-right: 1px solid black;
+			float: left;
+			text-align: right;
+			line-height: $axis-row-height;
+		}
+	}
+
+	.full-time-row {
+		$full-time-row-height: 25px;
+		height: $full-time-row-height;
+
+		.full-time {
+			overflow: hidden;
+			height: 100%;
+			box-sizing: border-box;
+			border-right: 1px solid black;
+			float: left;
+			text-align: right;
+			line-height: $full-time-row-height;
+		}
+	}
+}

@@ -38,32 +38,38 @@ class MainStore {
 
     @computed
     get onAssignmentWithoutBonus() {
-        return Math.round(
-            Math.min(
-                this.hoursLogged.onAssignment,
-                this.bonusLimitInHours
-            )
+        return Math.min(
+            this.hoursLogged.onAssignment,
+            this.bonusLimitInHours
         );
     }
 
     @computed
     get onAssignmentWithBonus() {
-        return Math.round(
+        return Math.max(0,
             this.hoursLogged.onAssignment -
-                this.onAssignmentWithoutBonus -
-                this.onAssignmentWithBigBonus
+            this.onAssignmentWithoutBonus -
+            this.onAssignmentWithBigBonus
         );
     }
 
     @computed
     get onAssignmentWithBigBonus() {
-        return Math.round(
+        return Math.min(
+            this.hoursLogged.onAssignment,
             Math.max(
                 0, 
                 this.hoursLogged.onAssignment - 
-                this.hoursInCurrentMonth * (1 - this.hoursLoggedPercent.internalTimeDecreasing)
+                this.onAssignmentHundredPercentInHours
             )
         );
+    }
+
+    @computed
+    get totalHours(){
+        return this.hoursLogged.onAssignment + 
+            this.hoursLogged.internalNoBonus + 
+            this.hoursLogged.internalTimeDecreasing;
     }
 }
 
