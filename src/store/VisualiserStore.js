@@ -1,21 +1,70 @@
-import { observable, decorate } from "mobx";
+import { observable, action, computed } from "mobx";
 
 class MainStore {
     @observable bonusLimit = 0.8;
-    $observable hoursInStandardMonth = 180;
-    bonusHours = 0;
-    hours = {
+    @observable hoursInStandardMonth = 180;
+    @observable hoursInCurrentMonth = 190;
+    @observable
+    hoursLoggedPercent = {
         onAssignment: 0,
         internalNoBonus: 0,
-        internalBonusShifting: 0
+        internalTimeDecreasing: 0
     };
-}
 
-decorate(MainStore, {
-    bonusLimit: observable,
-    hoursInStandardMonth: observable,
-    bonusHours: observable,
-    hours: observable
-});
+    @action.bound
+    changeHours(property, value) {
+        this.hoursLoggedPercent[property] = value / 100;
+    }
+
+    @computed
+    get hoursLogged() {
+        return {
+            onAssignment: Math.round(this.hoursLoggedPercent.onAssignment * this.hoursInCurrentMonth),
+            internalNoBonus: Math.round(this.hoursLoggedPercent.internalNoBonus * this.hoursInCurrentMonth),
+            internalTimeDecreasing: Math.round(this.hoursLoggedPercent.internalTimeDecreasing * this.hoursInCurrentMonth)
+        }
+    }
+
+    @computed
+    get onAssignmentHundredPercentInHours() {
+        return this.hoursInCurrentMonth * (1 - this.hoursLoggedPercent.internalTimeDecreasing);
+    }
+
+    @computed
+    get bonusLimitInHours() {
+        // prettier-ignore
+        return Math.max(0, this.onAssignmentHundredPercentInHours * this.bonusLimit);
+    }
+
+    @computed
+    get onAssignmentWithoutBonus() {
+        return Math.round(
+            Math.min(
+                this.hoursLogged.onAssignment,
+                this.bonusLimitInHours
+            )
+        );
+    }
+
+    @computed
+    get onAssignmentWithBonus() {
+        return Math.round(
+            this.hoursLogged.onAssignment -
+                this.onAssignmentWithoutBonus -
+                this.onAssignmentWithBigBonus
+        );
+    }
+
+    @computed
+    get onAssignmentWithBigBonus() {
+        return Math.round(
+            Math.max(
+                0, 
+                this.hoursLogged.onAssignment - 
+                this.hoursInCurrentMonth * (1 - this.hoursLoggedPercent.internalTimeDecreasing)
+            )
+        );
+    }
+}
 
 export default new MainStore();
