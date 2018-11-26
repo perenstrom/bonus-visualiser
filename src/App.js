@@ -23,11 +23,16 @@ class App extends React.Component {
             onAssignmentWithBigBonus,
             onAssignmentWithBigBonusAndPay,
             hoursLogged, 
+            hoursLoggedPercent,
             hoursInCurrentMonth, 
             bonusLimitInHours,
             onAssignmentHundredPercentInHours,
             internalHoursWithPay,
-            internalHoursWithoutPay
+            internalHoursWithoutPay,
+            bonusLimit,
+            hoursInStandardMonth,
+            internalTimeDecreasingWithPay,
+            internalTimeDecreasingWithoutPay
         } = VisualiserStore;
 
         const scaleFactor = 4.5;
@@ -40,7 +45,8 @@ class App extends React.Component {
             internalNoBonus: hoursLogged.internalNoBonus / (hoursInCurrentMonth * scaleFactor) * 100,
             internalHoursWithPay: internalHoursWithPay / (hoursInCurrentMonth * scaleFactor) * 100,
             internalHoursWithoutPay: internalHoursWithoutPay / (hoursInCurrentMonth * scaleFactor) * 100,
-            internalTimeDecreasing: hoursLogged.internalTimeDecreasing / (hoursInCurrentMonth * scaleFactor) * 100,
+            internalTimeDecreasingWithPay: internalTimeDecreasingWithPay / (hoursInCurrentMonth * scaleFactor) * 100,
+            internalTimeDecreasingWithoutPay: internalTimeDecreasingWithoutPay / (hoursInCurrentMonth * scaleFactor) * 100,
             bonusLimit: bonusLimitInHours / (hoursInCurrentMonth * scaleFactor) * 100,
             bonusLimitBig: onAssignmentHundredPercentInHours * 0.2 / (hoursInCurrentMonth * scaleFactor) * 100,
             fulltime: hoursInCurrentMonth / (hoursInCurrentMonth * scaleFactor) * 100
@@ -54,7 +60,8 @@ class App extends React.Component {
             internalNoBonus: (hoursLogged.internalNoBonus <= 0) ? "1px" : `${widthsPercent.internalNoBonus}%`,
             internalHoursWithPay: (internalHoursWithPay <= 0) ? "1px" : `${widthsPercent.internalHoursWithPay}%`,
             internalHoursWithoutPay: (internalHoursWithoutPay <= 0) ? "1px" : `${widthsPercent.internalHoursWithoutPay}%`,
-            internalTimeDecreasing: (hoursLogged.internalTimeDecreasing <= 0) ? "1px" : `${widthsPercent.internalTimeDecreasing}%`,
+            internalTimeDecreasingWithPay: (internalTimeDecreasingWithPay <= 0) ? "1px" : `${widthsPercent.internalTimeDecreasingWithPay}%`,
+            internalTimeDecreasingWithoutPay: (internalTimeDecreasingWithoutPay <= 0) ? "1px" : `${widthsPercent.internalTimeDecreasingWithoutPay}%`,
             bonusLimit: (bonusLimitInHours <= 0) ? "1px" : `${widthsPercent.bonusLimit}%`,
             bonusLimitBig: (onAssignmentHundredPercentInHours <= 0) ? "1px" : `${widthsPercent.bonusLimitBig}%`,
             fullTime: (hoursInCurrentMonth <= 0) ? "1px" : `${widthsPercent.fulltime}%`,
@@ -81,7 +88,8 @@ class App extends React.Component {
                         </div>
                         <div className="internal-with-pay" style={{width: widths.internalHoursWithPay}}></div>
                         <div className="internal-without-pay" style={{width: widths.internalHoursWithoutPay}}></div>
-                        <div className="internal-time-decreasing" style={{width: widths.internalTimeDecreasing}}></div>
+                        <div className="internal-time-decreasing-with-pay" style={{width: widths.internalTimeDecreasingWithPay}}></div>
+                        <div className="internal-time-decreasing-without-pay" style={{width: widths.internalTimeDecreasingWithoutPay}}></div>
                     </div>
                     <div className="axis-row">
                         <div className="bonus-limit" style={{width: widths.bonusLimit}}>80%</div>
@@ -93,19 +101,21 @@ class App extends React.Component {
                 </div>
                 <div>
                     <ul>
-                        <li>Debiterbar tid: {Math.round(VisualiserStore.hoursLoggedPercent.onAssignment * 100)} % ({VisualiserStore.hoursLogged.onAssignment})</li>
-                        <li>Interna timmar: {Math.round(VisualiserStore.hoursLoggedPercent.internalNoBonus * 100)} % ({VisualiserStore.hoursLogged.internalNoBonus})</li>
-                        <li>Tillgänlighetsminskande tid: {Math.round(VisualiserStore.hoursLoggedPercent.internalTimeDecreasing * 100)} % ({VisualiserStore.hoursLogged.internalTimeDecreasing})</li>
-                        <li>Bonusgrundande procent: {Math.round(VisualiserStore.bonusLimit * 100)} %</li>
-                        <li>Timmar i standardmånad: {Math.round(VisualiserStore.hoursInStandardMonth)}</li>
-                        <li>Timmar i denna månad: {Math.round(VisualiserStore.hoursInCurrentMonth)}</li>
-                        <li>Timmar innan bonus kickar in: {Math.round(VisualiserStore.bonusLimitInHours)}</li>
-                        <li>Timmar utan bonus: {Math.round(VisualiserStore.onAssignmentWithoutBonus)}</li>
-                        <li>Timmar med bonus: {Math.round(VisualiserStore.onAssignmentWithBonus)}</li>
-                        <li>Timmar med stor bonus och lön: {Math.round(VisualiserStore.onAssignmentWithBigBonusAndPay)}</li>
-                        <li>Timmar med stor bonus: {Math.round(VisualiserStore.onAssignmentWithBigBonus)}</li>
-                        <li>Interna timmar med lön: {Math.round(VisualiserStore.internalHoursWithPay)}</li>
-                        <li>Interna timmar utan lön: {Math.round(VisualiserStore.internalHoursWithoutPay)}</li>
+                        <li>Debiterbar tid: {Math.round(hoursLoggedPercent.onAssignment * 100)} % ({hoursLogged.onAssignment})</li>
+                        <li>Interna timmar: {Math.round(hoursLoggedPercent.internalNoBonus * 100)} % ({hoursLogged.internalNoBonus})</li>
+                        <li>Tillgänlighetsminskande tid: {Math.round(hoursLoggedPercent.internalTimeDecreasing * 100)} % ({hoursLogged.internalTimeDecreasing})</li>
+                        <li>Bonusgrundande procent: {Math.round(bonusLimit * 100)} %</li>
+                        <li>Timmar i standardmånad: {Math.round(hoursInStandardMonth)}</li>
+                        <li>Timmar i denna månad: {Math.round(hoursInCurrentMonth)}</li>
+                        <li>Timmar innan bonus kickar in: {Math.round(bonusLimitInHours)}</li>
+                        <li>Timmar utan bonus: {Math.round(onAssignmentWithoutBonus)}</li>
+                        <li>Timmar med bonus: {Math.round(onAssignmentWithBonus)}</li>
+                        <li>Timmar med stor bonus och lön: {Math.round(onAssignmentWithBigBonusAndPay)}</li>
+                        <li>Timmar med stor bonus: {Math.round(onAssignmentWithBigBonus)}</li>
+                        <li>Interna timmar med lön: {Math.round(internalHoursWithPay)}</li>
+                        <li>Interna timmar utan lön: {Math.round(internalHoursWithoutPay)}</li>
+                        <li>TM-timmar med lön: {Math.round(internalTimeDecreasingWithPay)}</li>
+                        <li>TMtimmar utan lön: {Math.round(internalTimeDecreasingWithoutPay)}</li>
                     </ul>
                     <div>
                         <form>

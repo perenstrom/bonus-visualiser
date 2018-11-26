@@ -86,9 +86,15 @@ $color-yellow: #E59500;
 			float: left;
 		}
 	
-		.internal-time-decreasing {
+		.internal-time-decreasing-with-pay {
 			background-color: $color-yellow;
 			height: 50%;
+			float: left;
+		}
+	
+		.internal-time-decreasing-without-pay {
+			background-color: $color-yellow;
+			height: 5px;
 			float: left;
 		}
 	}

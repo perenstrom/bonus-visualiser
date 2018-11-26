@@ -105,6 +105,22 @@ class MainStore {
     }
 
     @computed
+    get internalTimeDecreasingWithPay() {
+        return Math.min(
+            this.hoursLogged.internalTimeDecreasing,
+            Math.max(
+                0,
+                this.hoursInCurrentMonth - this.hoursLogged.onAssignment - this.hoursLogged.internalNoBonus
+            )
+        );
+    }
+
+    @computed
+    get internalTimeDecreasingWithoutPay() {
+        return this.hoursLogged.internalTimeDecreasing - this.internalTimeDecreasingWithPay;
+    }
+
+    @computed
     get totalHours() {
         return (
             this.hoursLogged.onAssignment +
