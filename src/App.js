@@ -119,6 +119,7 @@ class App extends React.Component {
                     </ul>
                     <div>
                         <form>
+                            Debiterbar tid (%)
                             <input
                                 name="onAssignment"
                                 type="range"
@@ -127,6 +128,7 @@ class App extends React.Component {
                                 value={VisualiserStore.hoursLoggedPercent.onAssignment * 100}
                                 onChange={this.handleChange}
                             />
+                            Intern tid (%)
                             <input
                                 name="internalNoBonus"
                                 type="range"
@@ -135,6 +137,7 @@ class App extends React.Component {
                                 value={VisualiserStore.hoursLoggedPercent.internalNoBonus * 100}
                                 onChange={this.handleChange}
                             />
+                            TM-tid (%)
                             <input
                                 name="internalTimeDecreasing"
                                 type="range"
