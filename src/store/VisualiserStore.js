@@ -19,15 +19,26 @@ class MainStore {
     @computed
     get hoursLogged() {
         return {
-            onAssignment: Math.round(this.hoursLoggedPercent.onAssignment * this.hoursInCurrentMonth),
-            internalNoBonus: Math.round(this.hoursLoggedPercent.internalNoBonus * this.hoursInCurrentMonth),
-            internalTimeDecreasing: Math.round(this.hoursLoggedPercent.internalTimeDecreasing * this.hoursInCurrentMonth)
-        }
+            onAssignment: Math.round(
+                this.hoursLoggedPercent.onAssignment * this.hoursInCurrentMonth
+            ),
+            internalNoBonus: Math.round(
+                this.hoursLoggedPercent.internalNoBonus *
+                    this.hoursInCurrentMonth
+            ),
+            internalTimeDecreasing: Math.round(
+                this.hoursLoggedPercent.internalTimeDecreasing *
+                    this.hoursInCurrentMonth
+            )
+        };
     }
 
     @computed
     get onAssignmentHundredPercentInHours() {
-        return this.hoursInCurrentMonth * (1 - this.hoursLoggedPercent.internalTimeDecreasing);
+        return (
+            this.hoursInCurrentMonth *
+            (1 - this.hoursLoggedPercent.internalTimeDecreasing)
+        );
     }
 
     @computed
@@ -38,18 +49,30 @@ class MainStore {
 
     @computed
     get onAssignmentWithoutBonus() {
-        return Math.min(
-            this.hoursLogged.onAssignment,
-            this.bonusLimitInHours
-        );
+        return Math.min(this.hoursLogged.onAssignment, this.bonusLimitInHours);
     }
 
     @computed
     get onAssignmentWithBonus() {
-        return Math.max(0,
+        return Math.max(
+            0,
             this.hoursLogged.onAssignment -
-            this.onAssignmentWithoutBonus -
-            this.onAssignmentWithBigBonus
+                this.onAssignmentWithoutBonus -
+                this.onAssignmentWithBigBonus - 
+                this.onAssignmentWithBigBonusAndPay
+        );
+    }
+
+    @computed
+    get onAssignmentWithBigBonusAndPay() {
+        return Math.min(
+            this.hoursLogged.onAssignment,
+            Math.max(
+                0,
+                this.hoursLogged.onAssignment -
+                    this.onAssignmentHundredPercentInHours -
+                    this.onAssignmentWithBigBonus
+            )
         );
     }
 
@@ -58,18 +81,36 @@ class MainStore {
         return Math.min(
             this.hoursLogged.onAssignment,
             Math.max(
-                0, 
-                this.hoursLogged.onAssignment - 
-                this.onAssignmentHundredPercentInHours
+                0,
+                this.hoursLogged.onAssignment -
+                    this.hoursInCurrentMonth
             )
         );
     }
 
     @computed
-    get totalHours(){
-        return this.hoursLogged.onAssignment + 
-            this.hoursLogged.internalNoBonus + 
-            this.hoursLogged.internalTimeDecreasing;
+    get internalHoursWithPay() {
+        return Math.min(
+            this.hoursLogged.internalNoBonus,
+            Math.max(
+                0,
+                this.hoursInCurrentMonth - this.hoursLogged.onAssignment
+            )
+        );
+    }
+
+    @computed
+    get internalHoursWithoutPay() {
+        return this.hoursLogged.internalNoBonus - this.internalHoursWithPay;
+    }
+
+    @computed
+    get totalHours() {
+        return (
+            this.hoursLogged.onAssignment +
+            this.hoursLogged.internalNoBonus +
+            this.hoursLogged.internalTimeDecreasing
+        );
     }
 }
 

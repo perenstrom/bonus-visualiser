@@ -21,28 +21,39 @@ class App extends React.Component {
             onAssignmentWithoutBonus,
             onAssignmentWithBonus,
             onAssignmentWithBigBonus,
+            onAssignmentWithBigBonusAndPay,
             hoursLogged, 
             hoursInCurrentMonth, 
             bonusLimitInHours,
-            onAssignmentHundredPercentInHours
+            onAssignmentHundredPercentInHours,
+            internalHoursWithPay,
+            internalHoursWithoutPay
         } = VisualiserStore;
-        const widthsPercent = {
-            onAssignmentWithoutBonus: onAssignmentWithoutBonus / (hoursInCurrentMonth * 4.5) * 100,
-            onAssignmentWithBonus: onAssignmentWithBonus / (hoursInCurrentMonth * 4.5) * 100,
-            onAssignmentWithBigBonus: onAssignmentWithBigBonus / (hoursInCurrentMonth * 4.5) * 100,
-            internalNoBonus: hoursLogged.internalNoBonus / (hoursInCurrentMonth * 4.5) * 100,
-            internalTimeDecreasing: hoursLogged.internalTimeDecreasing / (hoursInCurrentMonth * 4.5) * 100,
-            bonusLimit: bonusLimitInHours / (hoursInCurrentMonth * 4.5) * 100,
-            bonusLimitBig: onAssignmentHundredPercentInHours * 0.2 / (hoursInCurrentMonth * 4.5) * 100,
-            fulltime: hoursInCurrentMonth / (hoursInCurrentMonth * 4.5) * 100
-        };
 
+        const scaleFactor = 4.5;
+
+        const widthsPercent = {
+            onAssignmentWithoutBonus: onAssignmentWithoutBonus / (hoursInCurrentMonth * scaleFactor) * 100,
+            onAssignmentWithBonus: onAssignmentWithBonus / (hoursInCurrentMonth * scaleFactor) * 100,
+            onAssignmentWithBigBonusAndPay: onAssignmentWithBigBonusAndPay / (hoursInCurrentMonth * scaleFactor) * 100,
+            onAssignmentWithBigBonus: onAssignmentWithBigBonus / (hoursInCurrentMonth * scaleFactor) * 100,
+            internalNoBonus: hoursLogged.internalNoBonus / (hoursInCurrentMonth * scaleFactor) * 100,
+            internalHoursWithPay: internalHoursWithPay / (hoursInCurrentMonth * scaleFactor) * 100,
+            internalHoursWithoutPay: internalHoursWithoutPay / (hoursInCurrentMonth * scaleFactor) * 100,
+            internalTimeDecreasing: hoursLogged.internalTimeDecreasing / (hoursInCurrentMonth * scaleFactor) * 100,
+            bonusLimit: bonusLimitInHours / (hoursInCurrentMonth * scaleFactor) * 100,
+            bonusLimitBig: onAssignmentHundredPercentInHours * 0.2 / (hoursInCurrentMonth * scaleFactor) * 100,
+            fulltime: hoursInCurrentMonth / (hoursInCurrentMonth * scaleFactor) * 100
+        };
 
         const widths = {
             onAssignmentWithoutBonus: (onAssignmentWithoutBonus <= 0) ? "1px" : `${widthsPercent.onAssignmentWithoutBonus}%`,
             onAssignmentWithBonus: `${widthsPercent.onAssignmentWithBonus}%`,
+            onAssignmentWithBigBonusAndPay: `${widthsPercent.onAssignmentWithBigBonusAndPay}%`,
             onAssignmentWithBigBonus: `${widthsPercent.onAssignmentWithBigBonus}%`,
             internalNoBonus: (hoursLogged.internalNoBonus <= 0) ? "1px" : `${widthsPercent.internalNoBonus}%`,
+            internalHoursWithPay: (internalHoursWithPay <= 0) ? "1px" : `${widthsPercent.internalHoursWithPay}%`,
+            internalHoursWithoutPay: (internalHoursWithoutPay <= 0) ? "1px" : `${widthsPercent.internalHoursWithoutPay}%`,
             internalTimeDecreasing: (hoursLogged.internalTimeDecreasing <= 0) ? "1px" : `${widthsPercent.internalTimeDecreasing}%`,
             bonusLimit: (bonusLimitInHours <= 0) ? "1px" : `${widthsPercent.bonusLimit}%`,
             bonusLimitBig: (onAssignmentHundredPercentInHours <= 0) ? "1px" : `${widthsPercent.bonusLimitBig}%`,
@@ -56,9 +67,20 @@ class App extends React.Component {
                     </div>
                     <div className="hours-row">
                         <div className="on-assignment" style={{width: widths.onAssignmentWithoutBonus}}></div>
-                        <div className="on-assignment-bonus" style={{width: widths.onAssignmentWithBonus}}></div>
-                        <div className="on-assignment-bonus-big" style={{width: widths.onAssignmentWithBigBonus}}></div>
-                        <div className="internal-no-bonus" style={{width: widths.internalNoBonus}}></div>
+                        <div className="on-assignment-bonus" style={{width: widths.onAssignmentWithBonus}}>
+                            <div className="base"></div>
+                            <div className="bonus"></div>
+                        </div>
+                        <div className="on-assignment-bonus-big-with-pay" style={{width: widths.onAssignmentWithBigBonusAndPay}}>
+                            <div className="base"></div>
+                            <div className="bonus"></div>
+                        </div>
+                        <div className="on-assignment-bonus-big" style={{width: widths.onAssignmentWithBigBonus}}>
+                            <div className="base"></div>
+                            <div className="bonus"></div>
+                        </div>
+                        <div className="internal-with-pay" style={{width: widths.internalHoursWithPay}}></div>
+                        <div className="internal-without-pay" style={{width: widths.internalHoursWithoutPay}}></div>
                         <div className="internal-time-decreasing" style={{width: widths.internalTimeDecreasing}}></div>
                     </div>
                     <div className="axis-row">
@@ -80,7 +102,10 @@ class App extends React.Component {
                         <li>Timmar innan bonus kickar in: {Math.round(VisualiserStore.bonusLimitInHours)}</li>
                         <li>Timmar utan bonus: {Math.round(VisualiserStore.onAssignmentWithoutBonus)}</li>
                         <li>Timmar med bonus: {Math.round(VisualiserStore.onAssignmentWithBonus)}</li>
+                        <li>Timmar med stor bonus och lön: {Math.round(VisualiserStore.onAssignmentWithBigBonusAndPay)}</li>
                         <li>Timmar med stor bonus: {Math.round(VisualiserStore.onAssignmentWithBigBonus)}</li>
+                        <li>Interna timmar med lön: {Math.round(VisualiserStore.internalHoursWithPay)}</li>
+                        <li>Interna timmar utan lön: {Math.round(VisualiserStore.internalHoursWithoutPay)}</li>
                     </ul>
                     <div>
                         <form>
